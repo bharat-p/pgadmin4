@@ -280,7 +280,16 @@ MAX_QUERY_HIST_STORED = 20
 # SESSION_DB_PATH = '/run/shm/pgAdmin4_session'
 #
 ##########################################################################
+SESSION_STORE_TYPE = "file" # file | redis
+
+# SESSION_DB_PATH required SESSION_STORE_TYPE = file
 SESSION_DB_PATH = os.path.join(DATA_DIR, 'sessions')
+
+# following config is applicable when SESSION_STORE_TYPE=redis
+SESSION_REDIS_HOST = "localhost"
+SESSION_REDIS_PORT = 6379
+SESSION_REDIS_PASSWORD = ""
+SESSION_REDIS_DB = 0
 
 SESSION_COOKIE_NAME = 'pga4_session'
 

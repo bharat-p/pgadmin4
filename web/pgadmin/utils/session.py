@@ -328,17 +328,33 @@ class ManagedSessionInterface(SessionInterface):
 
 
 def create_session_interface(app, skip_paths=[]):
-    return ManagedSessionInterface(
-        CachingSessionManager(
-            FileBackedSessionManager(
-                app.config['SESSION_DB_PATH'],
-                app.config['SECRET_KEY'],
-                app.config.get('PGADMIN_SESSION_DISK_WRITE_DELAY', 10),
+
+    if app.config["SESSION_STORE_TYPE"] == "redis":
+        from redis import Redis
+        from flask_session.sessions import RedisSessionInterface
+        redis = Redis(
+            app.config['SESSION_REDIS_HOST'],
+            app.config['SESSION_REDIS_PORT'],
+            app.config['SESSION_REDIS_DB'],
+            app.config['SESSION_REDIS_PASSWORD'])
+        redis_session_interface = RedisSessionInterface(
+            redis,
+            "pga4_session_"
+        )
+        return redis_session_interface
+
+    else:
+        return ManagedSessionInterface(
+            CachingSessionManager(
+                FileBackedSessionManager(
+                    app.config['SESSION_DB_PATH'],
+                    app.config['SECRET_KEY'],
+                    app.config.get('PGADMIN_SESSION_DISK_WRITE_DELAY', 10),
+                    skip_paths
+                ),
+                1000,
                 skip_paths
-            ),
-            1000,
-            skip_paths
-        ))
+            ))
 
 
 def pga_unauthorised():
